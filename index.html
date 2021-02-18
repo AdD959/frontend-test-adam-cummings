@@ -57,8 +57,92 @@
           </div>
         </div>
       </section>
-      <article class="px-4 md:px-6 lg:px-8 max-w-7xl mx-auto py-10">
+      <article class="px-4 md:px-6 lg:px-8 max-w-7xl mx-auto py-10" >
         <!-- Code goes here -->
+        <h1 class="text-lg font-bold">Send SMS with out PHP API</h1>
+        <p class="text-base my-3">Refer to the code below to see how easily you can integrate our SMS API with your own software, CRM application or website in a language you already use.</p>
+        <p class="text-sm "><a class="border-b-2" href="#">Read our full API documentation</a></p>
+        <div class="my-5">
+          <div class="my-4">
+            <button 
+            :class="{'text-blue-600 border-blue-600' : method === 'post'}"
+            @click="method = 'post'" 
+            class="px-4 py-1 text-sm rounded-full border-2 border-gray-300 bg-white font-bold focus:outline-none">POST</button>
+            <button @click="method = 'get'" 
+            :class="{'text-blue-600 border-blue-600' : method === 'get'}"
+            class="px-4 py-1 text-sm rounded-full border-2 border-gray-300 bg-white font-bold focus:outline-none">GET</button>
+            <button @click="method = 'class'" 
+            :class="{'text-blue-600 border-blue-600' : method === 'class'}"
+            class="px-4 py-1 text-sm rounded-full border-2 border-gray-300 bg-white font-bold focus:outline-none">Class</button>
+          </div>
+          <div >
+            <div x-show="method === 'post'">
+              <pre><code class="language-php px-6 py-8 rounded-lg">&lt;?php
+                // Account details
+                $apiKey = urlencode('Your apiKey');
+                
+                // Message details
+                $numbers = array(<span x-show="country === 'gb'">447123456789, 447987654321</span><span x-show="country === 'ie'">35312345678, 35398765432</span><span x-show="country === 'es'">34987654321</span>);
+                $sender = urlencode('<span x-show="country === 'gb'">Jims Auto</span><span x-show="country === 'ie'">Kilkenny Glass</span><span x-show="country === 'es'">Supermercado Alme&iacute;ra</span>');
+                $message = rawurlencode('<span x-show="country === 'gb'">Your car is due for its MOT on Jan 30th. Please book in ASAP</span><span x-show="country === 'ie'">Your window fitting appointment is scheduled for 4pm with Colm</span><span x-show="country === 'es'">Javier entregar&aacute; tus compras a las 13:00 horas de hoy</span>.');
+                
+                $numbers = implode(',', $numbers); 
+                
+                // Prepare data for POST request
+                $data = array('apikey' =&gt; $apiKey, 'numbers' =&gt; $numbers, &quot;sender&quot; =&gt; $sender, &quot;message&quot; =&gt; $message);
+                
+                // Send the POST request with cURL
+                $ch = curl_init('https://api.txtlocal.com/send/');
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                $response = curl_exec($ch);
+                curl_close($ch);
+                
+                // Process your response here
+                echo $response;
+              ?&gt;</code></pre>
+            </div>
+            <div x-show="method === 'get'">
+              <pre><code class="language-php px-6 py-8 rounded-lg">&lt;?php
+                // Account details
+                $apiKey = urlencode('Your apiKey');
+                
+                // Message details
+                $numbers = urlencode('<span x-show="country === 'gb'">447123456789, 447987654321</span><span x-show="country === 'ie'">35312345678, 35398765432</span><span x-show="country === 'es'">34987654321</span>');
+                $sender = urlencode('<span x-show="country === 'gb'">Jims Auto</span><span x-show="country === 'ie'">Kilkenny Glass</span><span x-show="country === 'es'">Supermercado Alme&iacute;ra</span>');
+                $message = rawurlencode('<span x-show="country === 'gb'">Your car is due for its MOT on Jan 30th. Please book in ASAP</span><span x-show="country === 'ie'">Your window fitting appointment is scheduled for 4pm with Colm</span><span x-show="country === 'es'">Javier entregar&aacute; tus compras a las 13:00 horas de hoy</span>.');
+              
+                // Prepare data for POST request
+                $data = 'apikey=' . $apiKey . '&amp;numbers=' . $numbers . &quot;&amp;sender=&quot; . $sender . &quot;&amp;message=&quot; . $message;
+              
+                // Send the GET request with cURL
+                $ch = curl_init('https://api.txtlocal.com/send/?' . $data);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                $response = curl_exec($ch);
+                curl_close($ch);
+                
+                // Process your response here
+                echo $response;
+              ?&gt;</code></pre>
+              
+            </div>
+            <div x-show="method === 'class'">
+              <pre><code class="language-php px-6 py-8 rounded-lg">&lt;?php
+                require('textlocal.class.php');
+              
+                $Textlocal = new Textlocal(false, false, 'your apiKey');
+              
+                $numbers = array(<span x-show="country === 'gb'">447123456789, 447987654321</span><span x-show="country === 'ie'">35312345678, 35398765432</span><span x-show="country === 'es'">34987654321</span>);
+                $sender = '<span x-show="country === 'gb'">Jims Auto</span><span x-show="country === 'ie'">Kilkenny Glass</span><span x-show="country === 'es'">Supermercado Alme&iacute;ra</span>';
+                $message = '<span x-show="country === 'gb'">Your car is due for its MOT on Jan 30th. Please book in ASAP</span><span x-show="country === 'ie'">Your window fitting appointment is scheduled for 4pm with Colm</span><span x-show="country === 'es'">Javier entregar&aacute; tus compras a las 13:00 horas de hoy</span>.';
+              
+                $response = $textlocal-&gt;sendSms($numbers, $message, $sender);
+                print_r($response);
+              ?&gt;</code></pre>
+            </div>
+          </div>
+        </div>
       </article>
     </main>
     <footer class="flex-shrink-0 py-8 bg-gray-200 text-xs">
